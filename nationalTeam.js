@@ -1,4 +1,4 @@
-export default class NationalTeam {
+export class NationalTeam {
   group = "";
   team = "";
   isoCode = "";
@@ -7,6 +7,7 @@ export default class NationalTeam {
   losses = 0;
   scoredPoints = 0;
   receivedPoints = 0;
+  pointDifference = 0;
 
   constructor(team, isoCode, fibaRanking, group) {
     this.group = group;
