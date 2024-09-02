@@ -5,6 +5,7 @@ import {
   displayGameResultsAfterGroupPhase,
   displayStandingsPerGroup,
   quaterFinalsTeam,
+  nextGroupQF,
 } from "./utils.js";
 
 const require = createRequire(import.meta.url);
@@ -33,6 +34,9 @@ const allNationalTeams = (() => {
 const results = simulateGamesForAllGroups(allNationalTeams, competitionGroups);
 displayGameResultsAfterGroupPhase(results);
 displayStandingsPerGroup(competitionGroups, allNationalTeams);
-
-// Quaterfinals, Semifinals && Finals
+// Quaterfinals,
 quaterFinalsTeam(allNationalTeams);
+nextGroupQF();
+const top8Teams = quaterFinalsTeam(standings);
+nextGroupQF(top8Teams);
+//Semifinals && Finals

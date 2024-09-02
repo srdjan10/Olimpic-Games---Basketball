@@ -35,7 +35,6 @@ export const displayGameResultsAfterGroupPhase = (results) => {
     console.log(` ${result.team1} - ${result.team2}: ${result.score}`);
   });
 };
-
 // Simulacija utakmica -> sve rezultate utakmica
 export const simulateGamesForAllGroups = (
   allNationalTeams,
@@ -67,7 +66,7 @@ export const simulateGamesForAllGroups = (
   }
   return allGamesWithResults;
 };
-
+//Sortiranje timova u grupi
 export const sortTeamsInGroups = (competitionGroups, allNationalTeams) => {
   const standings = [];
   for (const group in competitionGroups) {
@@ -88,7 +87,7 @@ export const sortTeamsInGroups = (competitionGroups, allNationalTeams) => {
   }
   return standings;
 };
-
+//prikaz timova u grupi
 export const displayStandingsPerGroup = (
   competitionGroups,
   allNationalTeams
@@ -131,7 +130,43 @@ export const quaterFinalsTeam = (standings) => {
     })
     .map((team) => team.isoCode);
   const top8Teams = sortedTeams.slice(0, 8);
+  console.log("");
   console.log("Najbolji timovi plasirali su se u cetvrtfinale:");
   console.log(top8Teams.join(","));
   console.log("");
+  //Odredjivanje sesira za dalje takmicenje
+  const newGroup = ["D", "E", "F", "G"];
+  console.log(`Sesir: ${newGroup.slice(0, 1)}`);
+  for (let i = 0; i < top8Teams.length - 6; i++) {
+    const element = top8Teams[i];
+    console.log(element);
+  }
+  console.log(`Sesir: ${newGroup.slice(1, 2)}`);
+  for (let i = 2; i < top8Teams.length - 4; i++) {
+    const element = top8Teams[i];
+    console.log(element);
+  }
+  console.log(`Sesir: ${newGroup.slice(2, 3)}`);
+  for (let i = 4; i < top8Teams.length - 2; i++) {
+    const element = top8Teams[i];
+    console.log(element);
+  }
+  console.log(`Sesir: ${newGroup.slice(3, 4)}`);
+  for (let i = 6; i < top8Teams.length; i++) {
+    const element = top8Teams[i];
+    console.log(element);
+  }
+  return top8Teams;
 };
+// Cetvrtfinalne utakmice
+export const nextGroupQF = (top8Teams) => {
+  console.log("");
+  console.log("Cetvrtfinalne utakmice");
+  console.log("");
+  console.log(top8Teams);
+  const matchQF = [
+    [top8Teams[0], top8Teams[1]],
+    [top8Teams[2], top8Teams[3]],
+    [top8Teams[4], top8Teams[5]],
+    [top8Teams[6], top8Teams[7]],
+  ];
