@@ -4,8 +4,8 @@ import {
   simulateGamesForAllGroups,
   displayGameResultsAfterGroupPhase,
   displayStandingsPerGroup,
-  quaterFinalsTeam,
-  nextGroupQF,
+  getQuaterFinalTeams,
+  simulateGamesForEliminationPhases,
 } from "./utils.js";
 
 const require = createRequire(import.meta.url);
@@ -34,9 +34,15 @@ const allNationalTeams = (() => {
 const results = simulateGamesForAllGroups(allNationalTeams, competitionGroups);
 displayGameResultsAfterGroupPhase(results);
 displayStandingsPerGroup(competitionGroups, allNationalTeams);
+
 // Quaterfinals,
-quaterFinalsTeam(allNationalTeams);
-nextGroupQF();
-const top8Teams = quaterFinalsTeam(standings);
-nextGroupQF(top8Teams);
+const top8Teams = getQuaterFinalTeams(allNationalTeams);
+const semifinalists = simulateGamesForEliminationPhases(top8Teams);
+
 //Semifinals && Finals
+const finalists = simulateGamesForEliminationPhases(semifinalists);
+const gold_medal = simulateGamesForEliminationPhases(finalists);
+
+console.log("");
+console.log("Medalje:");
+console.log(`🥇🏆 ${gold_medal[0].isoCode}`);

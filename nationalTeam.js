@@ -26,7 +26,7 @@ export class NationalTeam {
     this.gamesLost++;
   }
 
-  documentGame(teamScore, opponentScore) {
+  documentGame(oponent, teamScore, opponentScore) {
     this.scoredPointsInTotal += teamScore;
     this.receivedPointsInTotal += opponentScore;
     this.difference = this.scoredPointsInTotal - this.receivedPointsInTotal;
@@ -34,5 +34,10 @@ export class NationalTeam {
       this.gamesWon++;
     } else this.gamesLost++;
     this.groupPhasePoints = this.gamesWon * 2 + this.gamesLost;
+    this.gamesHistory.push({
+      oponent,
+      teamScore,
+      opponentScore,
+    });
   }
 }

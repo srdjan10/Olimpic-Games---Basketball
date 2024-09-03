@@ -35,6 +35,7 @@ export const displayGameResultsAfterGroupPhase = (results) => {
     console.log(` ${result.team1} - ${result.team2}: ${result.score}`);
   });
 };
+
 // Simulacija utakmica -> sve rezultate utakmica
 export const simulateGamesForAllGroups = (
   allNationalTeams,
@@ -52,8 +53,16 @@ export const simulateGamesForAllGroups = (
           teamsForGroup[i],
           teamsForGroup[j]
         );
-        teamsForGroup[i].documentGame(team1Score, team2Score);
-        teamsForGroup[j].documentGame(team2Score, team1Score);
+        teamsForGroup[i].documentGame(
+          teamsForGroup[j].teamName,
+          team1Score,
+          team2Score
+        );
+        teamsForGroup[j].documentGame(
+          teamsForGroup[i].teamName,
+          team2Score,
+          team1Score
+        );
 
         allGamesWithResults.push({
           group: competitionGroups[group],
@@ -65,6 +74,19 @@ export const simulateGamesForAllGroups = (
     }
   }
   return allGamesWithResults;
+};
+//Simulacija utakmica eliminacione faze
+const simulateMatch = (team1, team2) => {
+  let winner = null;
+  const { team1Score, team2Score } = generateScore(team1, team2);
+  team1.documentGame(team2.isoCode, team1Score, team2Score);
+  team2.documentGame(team1.isoCode, team2Score, team1Score);
+  if (team1Score > team2Score) {
+    winner = team1;
+  } else {
+    winner = team2;
+  }
+  return winner;
 };
 //Sortiranje timova u grupi
 export const sortTeamsInGroups = (competitionGroups, allNationalTeams) => {
@@ -87,6 +109,7 @@ export const sortTeamsInGroups = (competitionGroups, allNationalTeams) => {
   }
   return standings;
 };
+
 //prikaz timova u grupi
 export const displayStandingsPerGroup = (
   competitionGroups,
@@ -115,58 +138,93 @@ export const displayStandingsPerGroup = (
     );
   }
 };
+
 //Timovi koji su se plasirali u cetvrtfinale
-export const quaterFinalsTeam = (standings) => {
-  const sortedTeams = Object.entries(standings)
-    .map(([team, stats]) => ({
-      team,
-      gamesWon: stats.gamesWon,
-      isoCode: stats.isoCode,
-      difference: stats.scoredPointsInTotal - stats.receivedPointsInTotal,
-    }))
-    .sort((a, b) => {
-      if (b.wins !== a.wins) return a.wins - b.wins;
+export const getQuaterFinalTeams = (allNationalTeams) => {
+  const sortedTeams = allNationalTeams.sort((a, b) => {
+    if (b.gamesWon === a.gamesWon) {
       return b.difference - a.difference;
-    })
-    .map((team) => team.isoCode);
-  const top8Teams = sortedTeams.slice(0, 8);
+    }
+    return b.gamesWon - a.gamesWon;
+  });
+  const top8TeamNames = sortedTeams.map((team) => team.isoCode).slice(0, 8);
   console.log("");
   console.log("Najbolji timovi plasirali su se u cetvrtfinale:");
-  console.log(top8Teams.join(","));
+  console.log(top8TeamNames.join(","));
   console.log("");
   //Odredjivanje sesira za dalje takmicenje
   const newGroup = ["D", "E", "F", "G"];
   console.log(`Sesir: ${newGroup.slice(0, 1)}`);
-  for (let i = 0; i < top8Teams.length - 6; i++) {
-    const element = top8Teams[i];
+  for (let i = 0; i < top8TeamNames.length - 6; i++) {
+    const element = top8TeamNames[i];
     console.log(element);
   }
   console.log(`Sesir: ${newGroup.slice(1, 2)}`);
-  for (let i = 2; i < top8Teams.length - 4; i++) {
-    const element = top8Teams[i];
+  for (let i = 2; i < top8TeamNames.length - 4; i++) {
+    const element = top8TeamNames[i];
     console.log(element);
   }
   console.log(`Sesir: ${newGroup.slice(2, 3)}`);
-  for (let i = 4; i < top8Teams.length - 2; i++) {
-    const element = top8Teams[i];
+  for (let i = 4; i < top8TeamNames.length - 2; i++) {
+    const element = top8TeamNames[i];
     console.log(element);
   }
   console.log(`Sesir: ${newGroup.slice(3, 4)}`);
-  for (let i = 6; i < top8Teams.length; i++) {
-    const element = top8Teams[i];
+  for (let i = 6; i < top8TeamNames.length; i++) {
+    const element = top8TeamNames[i];
     console.log(element);
   }
-  return top8Teams;
+  return sortedTeams.slice(0, 8);
 };
-// Cetvrtfinalne utakmice
-export const nextGroupQF = (top8Teams) => {
-  console.log("");
-  console.log("Cetvrtfinalne utakmice");
-  console.log("");
-  console.log(top8Teams);
-  const matchQF = [
-    [top8Teams[0], top8Teams[1]],
-    [top8Teams[2], top8Teams[3]],
-    [top8Teams[4], top8Teams[5]],
-    [top8Teams[6], top8Teams[7]],
-  ];
+
+// Eliminacione faze
+export const simulateGamesForEliminationPhases = (teams) => {
+  let matches = [];
+  const winners = [];
+  switch (teams.length) {
+    case 2: {
+      console.log("");
+      console.log("Finale:");
+      console.log("");
+      matches = [[teams[0], teams[1]]];
+
+      break;
+    }
+    case 4: {
+      console.log("");
+      console.log("Polufinale:");
+      console.log("");
+      matches = [
+        [teams[0], teams[3]],
+        [teams[1], teams[2]],
+      ];
+      break;
+    }
+    case 8: {
+      console.log("");
+      console.log("Cetvrtfinale:");
+      console.log("");
+      matches = [
+        [teams[0], teams[1]],
+        [teams[2], teams[3]],
+        [teams[4], teams[5]],
+        [teams[6], teams[7]],
+      ];
+      break;
+    }
+  }
+  matches.forEach((oponents) => {
+    const team1 = oponents[0];
+    const team2 = oponents[1];
+
+    const winner = simulateMatch(team1, team2);
+    const winnersLastGame = winner.gamesHistory[winner.gamesHistory.length - 1];
+
+    console.log(
+      ` ${winner.isoCode} - ${winnersLastGame.oponent} : ${winnersLastGame.teamScore} - ${winnersLastGame.opponentScore}`
+    );
+    winners.push(winner);
+  });
+
+  return winners;
+};
